@@ -5,7 +5,7 @@
 Windows 绿色小工具：把本地代理**只注入 Antigravity 这一棵进程树**——
 不开虚拟网卡、不改系统代理、不动注册表网络设置，电脑上其它软件和全网速度完全不受影响。
 
-[English](#english-summary) · [下载](#下载) · [许可证](#license)
+[English](#english-summary) · [下载](#下载) · [许可证](#license) · [交接文档](docs/HANDOVER.md)
 
 ![License](https://img.shields.io/badge/license-MIT-copper.svg)
 ![Version](https://img.shields.io/badge/version-v2.0.0--alpha.4-copper.svg)
@@ -32,6 +32,7 @@ Windows 绿色小工具：把本地代理**只注入 Antigravity 这一棵进程
 - [性能](#性能)
 - [从源码构建](#从源码构建)
 - [项目结构](#项目结构)
+- [交接文档](docs/HANDOVER.md)
 - [版本与升级记录](#版本与升级记录)
 - [已知限制](#已知限制)
 - [免责声明](#免责声明)
@@ -305,6 +306,7 @@ AgyLite/
 │   ├── config.rs      # config.json 读写
 │   └── theme.rs       # 配色与中文字体
 ├── docs/
+│   ├── HANDOVER.md          # 交接文档（单一入口：现状/红线/验证命令）
 │   ├── PRODUCT_SPEC.md     # 产品规格
 │   ├── UI_DESIGN.md        # UI 设计规范
 │   └── assets/screenshots/ # README 截图
