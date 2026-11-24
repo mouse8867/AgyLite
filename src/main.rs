@@ -7,6 +7,8 @@ mod preflight;
 mod theme;
 #[cfg(windows)]
 mod tray;
+#[cfg(windows)]
+mod win;
 
 use config::{AfterLaunch, Config};
 use eframe::egui;
@@ -131,7 +133,10 @@ impl AgyApp {
         };
         // Tray events are handled by a dedicated listener thread: a hidden
         // window produces no frames, so polling from update() alone left
-        // tray restore/quit dead in alpha.2.
+        // tray restore/quit dead in alpha.2. Since alpha.3 that thread is
+        // the only reader of the tray events, and it drives the window
+        // through Win32 directly (see "win") — an eframe viewport
+        // command cannot un-hide a window that is never painted again.
         #[cfg(windows)]
         if app.tray.is_some() {
             tray::spawn_listener(cc.egui_ctx.clone());
@@ -189,25 +194,6 @@ impl AgyApp {
         true
     }
 
-    #[cfg(windows)]
-    fn restore_from_tray(&mut self, ctx: &egui::Context) {
-        self.hidden_to_tray = false;
-        tray::WINDOW_HIDDEN.store(false, std::sync::atomic::Ordering::Relaxed);
-        ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(false));
-        ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
-        ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
-    }
-
-    #[cfg(windows)]
-    fn poll_tray(&mut self, ctx: &egui::Context) {
-        let (restore, quit) = tray::poll_tray();
-        if quit {
-            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-        } else if restore {
-            self.restore_from_tray(ctx);
-        }
-    }
-
     fn do_launch(&mut self, ctx: &egui::Context) {
         self.error = None;
         if let Some(res) = &self.result {
@@ -251,7 +237,6 @@ impl eframe::App for AgyApp {
         }
         #[cfg(windows)]
         {
-            self.poll_tray(ctx);
             // The title-bar — button minimises to the taskbar in winit and
             // there is no minimise hook, so convert it here: once the OS
             // reports the window minimised, hide it into the tray instead.
@@ -260,14 +245,18 @@ impl eframe::App for AgyApp {
             self.hidden_to_tray =
                 tray::WINDOW_HIDDEN.load(std::sync::atomic::Ordering::Relaxed);
             let os_minimised = ctx.input(|i| i.viewport().minimized) == Some(true);
-            if os_minimised && !self.hidden_to_tray && !self.hide_to_tray(ctx) {
+            // A restore can leave a stale "minimised" flag behind; honouring
+            // it would hide the window again on the very next frame.
+            let stale_minimised = tray::restore_grace_active();
+            if os_minimised && !stale_minimised && !self.hidden_to_tray && !self.hide_to_tray(ctx) {
                 // No tray icon (creation failed): leave the taskbar
                 // minimise as it is rather than hiding the window.
             }
             if self.hidden_to_tray {
                 // A hidden viewport gets no repaint requests on its own;
-                // poll the tray a few times a second so a tray click
-                // restores the window promptly.
+                // keep the frame loop ticking so the app stays responsive.
+                // (The tray events are polled by the listener thread, not
+                // here — a hidden window produces no frames at all.)
                 ctx.request_repaint_after(std::time::Duration::from_millis(250));
             }
         }

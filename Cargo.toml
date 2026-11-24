@@ -1,6 +1,6 @@
 [package]
 name = "agylite"
-version = "2.0.0-alpha.3"
+version = "2.0.0-alpha.4"
 edition = "2021"
 description = "AgyLite - launch Google Antigravity with a process-level proxy. No TUN, no system proxy changes."
 license = "MIT"
@@ -22,6 +22,14 @@ image = { version = "0.25", default-features = false, features = ["jpeg", "png"]
 winreg = "0.55"
 # Real system-tray icon (tray-icon 0.20, the maintained Tauri tray crate).
 tray-icon = "0.20"
+# Direct Win32 window control for the tray path: a hidden window is never
+# painted again, so eframe cannot re-show it — the tray thread does that
+# itself (ShowWindow / SetForegroundWindow / PostMessage(WM_CLOSE)).
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+    "Win32_UI_WindowsAndMessaging",
+] }
 
 [build-dependencies]
 # Embeds assets/icon.ico into the exe (Explorer / taskbar icon).
