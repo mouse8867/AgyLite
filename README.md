@@ -65,7 +65,7 @@ AgyLite 换了个思路：**不接管全机流量，只给 Antigravity 这一棵
 AgyLite 在**启动 Antigravity 的那一刻**，以子进程方式拉起它，并给这一棵进程树注入标准的
 代理环境变量：
 
-`@
+```
 AgyLite.exe
    │  1. 找到 Antigravity.exe（运行中进程 → 注册表 → 快捷方式 → 常见路径）
    │  2. 找到本机可用的 HTTP / 混合代理端口（端口归属反查 + 协议探测）
@@ -81,7 +81,7 @@ Antigravity.exe
    └── Agent 子进程 ────────────┘
 
 同一台电脑上的其它软件：完全不受影响（没有 TUN、没有系统代理）
-`@
+```
 
 注入完成之后，**启动器就可以退出了**，Antigravity 不受影响。
 但有一个前提必须记住：
@@ -132,11 +132,11 @@ Antigravity.exe
 到 **[Releases 页面](https://github.com/mouse8867/AgyLite/releases)** 下载 @AgyLite.exe@（约 5.4 MB），
 每个 Release 都附带同名 @.sha256@ 校验文件：
 
-`@powershell
+```powershell
 # 校验下载到的 exe
 Get-FileHash .\AgyLite.exe -Algorithm SHA256
 # 与 AgyLite.exe.sha256 里的值比对
-`@
+```
 
 系统要求：Windows 10 / 11 64 位（Windows 7 未测试）。不需要管理员权限。
 
@@ -247,31 +247,37 @@ A：目前不支持，目标平台只有 Windows。
 
 需要 Rust 稳定版工具链：
 
-`@powershell
+```powershell
 # MSVC 工具链（Windows 上的默认推荐）
 cargo build --release --target x86_64-pc-windows-msvc
 # 产物：target\x86_64-pc-windows-msvc\release\agylite.exe
-`@
+```
 
-或者直接从本仓库的 [GitHub Actions](https://github.com/mouse8867/AgyLite/actions) 下载构建产物
+或者直接从本仓库的 [Releases](https://github.com/mouse8867/AgyLite/releases) 下载已构建好的成品
 （每个 Release 都附 SHA256 校验值）。
+
+### CI 自动构建
+
+仓库内提供了 GitHub Actions 工作流源文件 [docs/ci/build.yml](docs/ci/build.yml)：
+推送 tag（`v*`）时自动构建 Windows x64 成品并发布 Release（自动附 SHA256）。
+把它复制到 `.github/workflows/build.yml` 即可启用。
 
 ### 托盘行为回归自测
 
 本项目有一个端到端自测脚本，验证「最小化进托盘 → 显示窗口 → 退出」这条链路：
 
-`@powershell
+```powershell
 pwsh -File scripts\verify_tray.ps1 -Exe .\AgyLite.exe
-`@
+```
 
 预期输出：
 
-`@
+```
 [PASS] 窗口与托盘图标已创建
 [PASS] 最小化后收进托盘（窗口不可见）
 [PASS] 托盘「显示窗口」能重新拉起窗口 — 菜单项 id=1001
 [PASS] 托盘「退出」能结束进程 — 菜单项 id=1003 退出码=0
-`@
+```
 
 ### 其它脚本
 
@@ -285,7 +291,7 @@ pwsh -File scripts\verify_tray.ps1 -Exe .\AgyLite.exe
 
 ## 项目结构
 
-`@
+```
 AgyLite/
 ├── src/
 │   ├── main.rs        # 界面（egui/eframe）、三页布局、托盘联动
@@ -299,11 +305,12 @@ AgyLite/
 ├── docs/
 │   ├── PRODUCT_SPEC.md     # 产品规格
 │   ├── UI_DESIGN.md        # UI 设计规范
+│   ├── ci/build.yml        # GitHub Actions 工作流源文件
 │   └── assets/screenshots/ # README 截图
 ├── scripts/            # 自测 / 截图 / 打包脚本
 ├── assets/             # 应用图标
 └── .github/workflows/  # CI：构建 + 自动发 Release
-`@
+```
 
 ---
 
