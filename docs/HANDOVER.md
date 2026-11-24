@@ -87,11 +87,16 @@ gh run view <run-id> --repo mouse8867/AgyLite --log
 
 首次正式运行结果（均 success）：
 
-- run [#45337816336](https://github.com/mouse8867/AgyLite/actions/runs/45337816336)（提交 `fe4c406`）
-- run [#45338061008](https://github.com/mouse8867/AgyLite/actions/runs/45338061008)（提交 `e34c8b1`）
+- run [#45337816336](https://github.com/mouse8867/AgyLite/actions/runs/45337816336)（提交 `27cf202`）
+- run [#45338061008](https://github.com/mouse8867/AgyLite/actions/runs/45338061008)（提交 `d645948`）
 
 两次都产出了 artifact `AgyLite-windows`（exe 与 sha256 一起），已核验 artifact 里的
 `AgyLite.exe.sha256` 与 artifact 里 exe 的哈希完全一致。
+
+> **2026-11-24 做过一次 git 历史重写**：早期提交里的原始截图含本机绝对路径，
+> 已用 `git filter-branch` 从所有历史提交中剔除并强制推送。因此重写前后的提交 SHA 不同，
+> 已经克隆过旧仓库的人需要 `git fetch origin && git reset --hard origin/main`（或重新 clone），
+> 两个 tag 也已重建（旧 SHA `7419136` → 新 `0d1e74c`）。
 注意：CI 在 GitHub runner 上重建的 exe 与 Release 附件里的 exe **不是同一份字节**
 （工具链与路径不同，体积差约 1 KB）。对外分发以 Release 附件为准。
 

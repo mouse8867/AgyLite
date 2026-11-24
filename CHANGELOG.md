@@ -76,3 +76,7 @@ pwsh -File scripts/verify_tray.ps1
     仓库体积和 README 排版都变小，界面文字仍然清晰。
 - 新增 `docs/HANDOVER.md`：单一入口的交接文档（现状、阻塞清单、验证命令与期望输出、
   交付物地图、行动清单、红线、术语与环境陷阱）。
+- **清理 git 历史**：早期提交（`7419136` 及之后）里的原始截图含本机绝对路径，
+  已用 `git filter-branch` 从所有历史提交中剔除并强制推送 `main` 与 `v2.0.0-alpha.4` tag，
+  两个 Release 保留（资产不变）。重写后所有提交 SHA 变化，已克隆过旧仓库的人需要
+  `git fetch origin && git reset --hard origin/main`。
