@@ -103,14 +103,27 @@ pwsh -File scripts\package.ps1
 
 产物：`dist\AgyLite-2.0.0-alpha.4-source-and-binary.zip`（`dist/` 已被 .gitignore 排除，需重新生成）。
 
-### 4.5 重新生成 README 截图
+### 4.5 重新生成 README 截图（自动脱敏）
 
 ```powershell
 pwsh -File scripts\capture_screenshots.ps1
 ```
 
-产物：`docs/assets/screenshots/0{1,2,3}-*.png`。注意截图里含本机路径与 Windows 账户名，
-对外发布前按需打码。
+流程：抓原始 PNG → `docs/assets/screenshots/_raw/` → 自动调用
+`scripts/redact_screenshots.ps1` 脱敏并缩图 → 产出 `docs/assets/screenshots/0{1,2,3}-*.jpg`（600px 宽）。
+
+**为什么要脱敏**：界面上的 Antigravity 绝对路径含本机 Windows 账户名，
+仓库是公开的，直接提交原图等于把 `C:\Users\<账户名>\...` 发出去。
+脱敏后路径显示为 `C:\Users\***\AppData\Local\Programs\antigravity\Antigravity.exe`。
+
+单独给已有截图补打码：
+
+```powershell
+pwsh -File scripts\redact_screenshots.ps1 -InDir docs\assets\screenshots\_raw -OutDir docs\assets\screenshots
+```
+
+若改了窗口尺寸或界面文案，`redact_screenshots.ps1` 里的坐标需要重新标定
+（脚本会打印实际检测到的文字范围）。
 
 ---
 
@@ -131,10 +144,11 @@ AgyLite/
 │   ├── HANDOVER.md          # 本文件：交接入口
 │   ├── PRODUCT_SPEC.md      # 产品规格
 │   ├── UI_DESIGN.md         # UI 设计规范
-│   └── assets/screenshots/  # README 截图
+│   └── assets/screenshots/  # README 截图（600px JPEG，已脱敏）
 ├── scripts/
 │   ├── verify_tray.ps1      # 托盘链路端到端回归自测
-│   ├── capture_screenshots.ps1
+│   ├── capture_screenshots.ps1  # 抓图（自动接脱敏流程）
+│   ├── redact_screenshots.ps1   # 截图脱敏 + 缩图
 │   └── package.ps1          # 打包「源码 + 成品」zip
 ├── assets/                   # 应用图标
 ├── .github/workflows/build.yml  # CI：构建 + 自动发 Release
@@ -208,9 +222,11 @@ gh release create v2.0.0-alpha.5 --repo mouse8867/AgyLite --title "AgyLite v2.0.
    否则会误把托盘辅助窗口当成主窗口来显示/关闭。
 4. **不要把 `AgyLite.exe` / `AgyLite.exe.sha256` / `dist/` 提交进 git**。
    二进制通过 Release 附件分发；.gitignore 已排除。
-5. **不要把任何令牌、密钥、账号密码写进仓库、提交信息、CI 输出或日志**。
-6. **不要删除 `v2.0.0-alpha.3` / `v2.0.0-alpha.4` 两个 tag**，它们是「前后版本升级过」的证据。
-7. 改动托盘相关代码后，**必须**跑 `scripts/verify_tray.ps1` 再提交。
+5. **不要把原始截图（`docs/assets/screenshots/_raw/*.png`）提交进 git**——
+   里面含本机绝对路径（`C:\Users\<账户名>\...`）。仓库里只放脱敏后的 `*.jpg`。
+6. **不要把任何令牌、密钥、账号密码写进仓库、提交信息、CI 输出或日志**。
+7. **不要删除 `v2.0.0-alpha.3` / `v2.0.0-alpha.4` 两个 tag**，它们是「前后版本升级过」的证据。
+8. 改动托盘相关代码后，**必须**跑 `scripts/verify_tray.ps1` 再提交。
 
 ---
 

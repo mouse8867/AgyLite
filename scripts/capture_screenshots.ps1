@@ -4,7 +4,9 @@
 
 .DESCRIPTION
     启动成品 → 等窗口 → 置顶并移到屏幕左上 → 等环境检测跑完 → 逐页点击
-    顶部分段控件切页 → 抓图。截图落在 docs\assets\screenshots\。
+    顶部分段控件切页 → 抓图。原始截图先落在 docs\assets\screenshots\_raw\，
+    再由 scripts\redact_screenshots.ps1 统一脱敏（遮掉界面上的本机绝对路径）
+    并缩成 600px JPEG，输出到 docs\assets\screenshots\。
 
     关键点：脚本必须先 SetProcessDPIAware()，否则 Windows 会把窗口坐标
     按 96 DPI 虚拟化，截出来的是错位的残图（踩过一次）。
@@ -23,6 +25,8 @@ if (-not (Test-Path $Exe)) { throw "找不到 $Exe" }
 $Exe = (Resolve-Path $Exe).Path
 New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 $OutDir = (Resolve-Path $OutDir).Path
+$rawDir = Join-Path $OutDir '_raw'
+New-Item -ItemType Directory -Path $rawDir -Force | Out-Null
 
 Add-Type -AssemblyName System.Drawing
 Add-Type @"
@@ -168,7 +172,16 @@ try {
         $y = [int]($origin.Y + ($segTopPts + $segH / 2) * $scale)
         [Cap]::Click($x, $y)
         Start-Sleep -Milliseconds 900
-        Save-Shot $hwnd (Join-Path $OutDir ("$($pg.name).png"))
+        Save-Shot $hwnd (Join-Path $rawDir ("$($pg.name).png"))
+    }
+
+    # 脱敏 + 缩图：界面上的 Antigravity 绝对路径含本机账户名，公开仓库里不能留
+    $redact = Join-Path $PSScriptRoot 'redact_screenshots.ps1'
+    if (Test-Path $redact) {
+        Write-Host '脱敏并缩图...'
+        & $redact -InDir $rawDir -OutDir $OutDir
+    } else {
+        Write-Warning "找不到 $redact，跳过脱敏：截图里会包含本机绝对路径，不要直接提交"
     }
 }
 finally {

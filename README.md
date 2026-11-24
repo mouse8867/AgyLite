@@ -13,7 +13,7 @@ Windows 绿色小工具：把本地代理**只注入 Antigravity 这一棵进程
 ![Rust](https://img.shields.io/badge/built_with-Rust%20%2B%20egui-orange.svg)
 ![Size](https://img.shields.io/badge/exe-5.4%20MB-green.svg)
 
-![状态页](docs/assets/screenshots/01-status.png)
+![状态页](docs/assets/screenshots/01-status.jpg)
 
 ---
 
@@ -96,15 +96,15 @@ Antigravity.exe
 
 **状态页**：一眼看清环境是否就绪，点一下就启动。
 
-![状态页](docs/assets/screenshots/01-status.png)
+![状态页](docs/assets/screenshots/01-status.jpg)
 
 **检测页**：启动前的环境自检清单，每一条不通过都给出「怎么办」。
 
-![检测页](docs/assets/screenshots/02-checks.png)
+![检测页](docs/assets/screenshots/02-checks.jpg)
 
 **设置页**：开机自启、启动后行为、手动覆盖路径与端口、关于与赞助。
 
-![设置页](docs/assets/screenshots/03-settings.png)
+![设置页](docs/assets/screenshots/03-settings.jpg)
 
 ---
 
@@ -287,7 +287,8 @@ pwsh -File scripts\verify_tray.ps1 -Exe .\AgyLite.exe
 | 脚本 | 作用 |
 | --- | --- |
 | @scripts/verify_tray.ps1@ | 托盘链路端到端回归自测 |
-| @scripts/capture_screenshots.ps1@ | 重新生成 README 里的界面截图 |
+| @scripts/capture_screenshots.ps1@ | 重新生成 README 里的界面截图（抓图 → 自动脱敏 → 缩图） |
+| @scripts/redact_screenshots.ps1@ | 单独给截图打码：遮掉本机绝对路径并缩成 600px JPEG |
 | @scripts/package.ps1@ | 打包「源码 + 成品」为一个 zip |
 
 ---

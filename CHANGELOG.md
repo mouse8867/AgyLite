@@ -64,3 +64,15 @@ pwsh -File scripts/verify_tray.ps1
   上构建 Windows x64 成品；推 tag 时自动把 `AgyLite.exe` 与 `AgyLite.exe.sha256`
   挂到对应 Release。
 - README 同步更新 CI 说明与项目结构树（不再需要手动复制工作流文件）。
+- **截图脱敏 + 缩小**：README 里的界面截图原来直接带着本机绝对路径
+  （`C:\Users\<账户名>\AppData\Local\Programs\antigravity\Antigravity.exe`），
+  而仓库是公开的，等于把 Windows 账户名发出去。现在：
+  - 新增 `scripts/redact_screenshots.ps1`：在指定文字行里定位那串路径，用同字体同色重绘成
+    `C:\Users\***\AppData\Local\Programs\antigravity\Antigravity.exe`，随后等比缩到
+    600px 宽并转成 JPEG（质量 90）；
+  - `scripts/capture_screenshots.ps1` 抓完图自动调用它，原始 PNG 落在
+    `docs/assets/screenshots/_raw/`（已 gitignore），仓库里只留脱敏后的 `*.jpg`；
+  - 三张图从 775×750 的 PNG（合计 404 KB）缩到 600×581 的 JPEG（合计 167 KB），
+    仓库体积和 README 排版都变小，界面文字仍然清晰。
+- 新增 `docs/HANDOVER.md`：单一入口的交接文档（现状、阻塞清单、验证命令与期望输出、
+  交付物地图、行动清单、红线、术语与环境陷阱）。
