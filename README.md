@@ -258,9 +258,11 @@ cargo build --release --target x86_64-pc-windows-msvc
 
 ### CI 自动构建
 
-仓库内提供了 GitHub Actions 工作流源文件 [docs/ci/build.yml](docs/ci/build.yml)：
-推送 tag（`v*`）时自动构建 Windows x64 成品并发布 Release（自动附 SHA256）。
-把它复制到 `.github/workflows/build.yml` 即可启用。
+CI 已启用，工作流在 [.github/workflows/build.yml](.github/workflows/build.yml)：
+
+- 推送到 `main` 或 tag（`v*`）时，在 `windows-latest` 上用 Rust 稳定版构建 Windows x64 成品；
+- 推 tag 时自动把 `AgyLite.exe` 与 `AgyLite.exe.sha256` 挂到对应的 Release；
+- 运行日志见 [Actions](https://github.com/mouse8867/AgyLite/actions)。
 
 ### 托盘行为回归自测
 
@@ -305,11 +307,10 @@ AgyLite/
 ├── docs/
 │   ├── PRODUCT_SPEC.md     # 产品规格
 │   ├── UI_DESIGN.md        # UI 设计规范
-│   ├── ci/build.yml        # GitHub Actions 工作流源文件
 │   └── assets/screenshots/ # README 截图
 ├── scripts/            # 自测 / 截图 / 打包脚本
 ├── assets/             # 应用图标
-└── .github/workflows/  # CI：构建 + 自动发 Release
+└── .github/workflows/  # CI：构建 + 自动发 Release（已启用）
 ```
 
 ---

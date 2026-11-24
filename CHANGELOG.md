@@ -54,3 +54,13 @@ pwsh -File scripts/verify_tray.ps1
 
 对照验证：把 `src/tray.rs` 退回 alpha.3 的写法（只发视口命令、不碰 Win32），
 第 3、4 项即 FAIL——与用户报的现象完全一致。
+
+## 未发布（Unreleased）
+
+仓库工程化改动，不影响程序行为：
+
+- **CI 正式启用**：工作流从 `docs/ci/build.yml` 迁到 GitHub 认的标准位置
+  `.github/workflows/build.yml`。推送 `main` 或 tag（`v*`）自动在 `windows-latest`
+  上构建 Windows x64 成品；推 tag 时自动把 `AgyLite.exe` 与 `AgyLite.exe.sha256`
+  挂到对应 Release。
+- README 同步更新 CI 说明与项目结构树（不再需要手动复制工作流文件）。
