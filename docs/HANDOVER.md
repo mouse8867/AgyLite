@@ -83,6 +83,17 @@ gh run view <run-id> --repo mouse8867/AgyLite --log
 工作流 `.github/workflows/build.yml`：`windows-latest` → `dtolnay/rust-toolchain@stable`
 → `cargo build --release --target x86_64-pc-windows-msvc` → 计算 SHA256 → 上传 artifact；
 推 tag 时用 `softprops/action-gh-release` 把 `AgyLite.exe` + `AgyLite.exe.sha256` 挂到 Release。
+非 tag 分支上 `Release` 这一步会被自动跳过（expected）。
+
+首次正式运行结果（均 success）：
+
+- run [#45337816336](https://github.com/mouse8867/AgyLite/actions/runs/45337816336)（提交 `fe4c406`）
+- run [#45338061008](https://github.com/mouse8867/AgyLite/actions/runs/45338061008)（提交 `e34c8b1`）
+
+两次都产出了 artifact `AgyLite-windows`（exe 与 sha256 一起），已核验 artifact 里的
+`AgyLite.exe.sha256` 与 artifact 里 exe 的哈希完全一致。
+注意：CI 在 GitHub runner 上重建的 exe 与 Release 附件里的 exe **不是同一份字节**
+（工具链与路径不同，体积差约 1 KB）。对外分发以 Release 附件为准。
 
 ### 4.4 打包（源码 + 成品 zip）
 
