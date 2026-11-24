@@ -1,0 +1,34 @@
+[package]
+name = "agylite"
+version = "2.0.0-alpha.3"
+edition = "2021"
+description = "AgyLite - launch Google Antigravity with a process-level proxy. No TUN, no system proxy changes."
+license = "MIT"
+authors = ["mouse8867 <mouse8867@gmail.com>"]
+
+[dependencies]
+eframe = "0.31"
+egui_extras = { version = "0.31", features = ["image"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.35"
+rfd = "0.15"
+# Direct decode for the support QR codes (bypasses the egui image
+# loader, which rendered them as broken-image placeholders on Windows)
+# and for the self-drawn app icon (assets/icon.png).
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.55"
+# Real system-tray icon (tray-icon 0.20, the maintained Tauri tray crate).
+tray-icon = "0.20"
+
+[build-dependencies]
+# Embeds assets/icon.ico into the exe (Explorer / taskbar icon).
+winresource = "0.1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
